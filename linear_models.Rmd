@@ -1,8 +1,20 @@
 ---
-title: "p8130 final project"
+title: "Linear regression"
 output: html_document
 ---
+```{r}
+library(tidyverse)
+library(modelr)
+```
 
+```{r}
+# Import data
+crime_df <- 
+  read_csv("./data/crime_df.csv")
+```
+
+## Predictors selection
+`poverty`, `regionNorth`, `regionSouth`, `per_doc`, `per_bed`
 ```{r}
 
 ```
