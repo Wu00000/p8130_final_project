@@ -1,9 +1,53 @@
 ---
-title: "p8130 final project"
+title: "Explorative Data Analysis"
 output: html_document
 ---
 
-```{r}
+```{r setup}
+library(tidyverse)
+library(plyr)
+```
 
+```{r}
+crime_raw <- 
+  read_csv("./data/cdi.csv")
+```
+
+## Data clean
+```{r}
+crime_df <- 
+  crime_raw %>% 
+  mutate(crime_per1k = crimes / pop * 10^3) %>% 
+  select(crime_per1k, everything())
+```
+
+## Distribution of target variable
+```{r}
+# Boxplot
+crime_df %>% 
+  ggplot(aes(y = crime_per1k)) + 
+  geom_boxplot()
+
+# Density
+crime_df %>% 
+  ggplot(aes(x = crime_per1k)) + 
+  geom_density()
+```
+
+## Check correlation between variables
+```{r}
+# Correlation heatmap
+cor_df <- 
+  crime_df %>% 
+  select(1, 5, 7:10, 12:17) %>% 
+  cor() %>% 
+  round(3)
+
+  ggcorrplot::ggcorrplot(
+  cor_df,
+  type = "lower",
+  hc.order = TRUE,
+  lab = TRUE,
+  lab_size = 3)
 ```
 
