@@ -64,7 +64,6 @@ cor_df <-
   lab_size = 3)
 ```
 
-
 ```{r}
 # Another cor map
 crime_try <- 
@@ -75,12 +74,20 @@ cor_data <-
   cor(cbind(crime_per1k = pull(crime_try, crime_per1k), 
   model.matrix(crime_per1k ~ ., data = crime_try)[,-1]))
 
+# Select `poverty`, `regionNorth`, `regionSouth`, `per_doc`, `per_bed`
 cor_data %>% 
   corrplot::corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE)
 ```
 
+
+## Check marginal distributions of the above variables
+```{r}
+# ----MODIFICATION NEEDED-----
+```
+
+
 ## Export data
 ```{r}
-write_csv(crime_df, "./data/crime_df.csv")
+# write_csv(crime_df, "./data/crime_df.csv")
 ```
 
