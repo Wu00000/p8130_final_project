@@ -52,7 +52,7 @@ plot(mod1)
 summary(mod1)
 
 mod2 <- lm(formula = crime_per1k ~ pop18 + bagrad + poverty + pcincome + region + per_area + per_bed + 
-             pop18 * bagrad + poverty * region + , data = crime_df)
+             pop18 * bagrad + poverty * region, data = crime_df)
 summary(mod2)
 ```
 
@@ -69,12 +69,10 @@ cv_df <-
     test = map(test, as_tibble))
 ```
 
-```{r}
 cv_df = 
   cv_df %>% 
   mutate(
     linear_mod  = map(train, ~lm(crime_per1k ~ poverty + region + per_doc + per_bed + pop18 + per_doc * per_bed + poverty * region + region * pop18 + poverty * region * per_bed * per_doc * pop18, data = .x))) %>% 
   mutate(
     rmse_linear = map2_dbl(linear_mod, test, ~ rmse(model = .x, data = .y)))
-```
 
