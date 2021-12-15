@@ -82,8 +82,29 @@ cor_data %>%
 
 ## Check marginal distributions of the above variables
 ```{r}
-# ----MODIFICATION NEEDED-----
+detach(package:plyr)
+
+# Distribution of `poverty`
+crime_df %>% 
+  ggplot(aes(y = poverty)) + 
+  geom_boxplot()
+
+# Distribution of `region`
+crime_df %>% 
+  group_by(region) %>% 
+  summarize(count = n())
+
+# Distribution of `per_doc`
+crime_df %>% 
+  ggplot(aes(y = per_doc)) + 
+  geom_boxplot()
+
+# Distribution of `per_bed`
+crime_df %>% 
+  ggplot(aes(y = per_bed)) + 
+  geom_boxplot()
 ```
+
 
 
 ## Export data
