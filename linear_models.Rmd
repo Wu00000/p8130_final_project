@@ -16,6 +16,7 @@ crime_df <-
   read_csv("./data/crime_df.csv")
 ```
 
+
 ## Distribution of target variable `crime_per1k`
 ```{r}
 # The plot shows lambda = 1, so no transformation needed
@@ -30,29 +31,34 @@ MASS::boxcox(fit1, lambda = seq(-3, 3, by = .25))
 ```
 
 ```{r}
+# Get rid of the 316th observation based on diagnostics
 crime_df = crime_df[-c(316), ]
 ```
 
 
-
-
 ## Predictors selection from EDA
-`poverty`, `regionNorth`, `regionSouth`, `per_doc`, `per_bed`
+`poverty`, `region`, `per_doc`, `per_bed`, `pop18`
 ```{r}
 # Check collinearity between predictors
 check_collinearity(fit1)
 ```
 
-# Fit models
+## Interactions
 ```{r}
-mod1 <- lm(crime_per1k ~ poverty + region + per_doc + per_bed, data = crime_df)
+
+```
+
+
+## Fit models and diagnositics
+```{r}
+mod1 <- lm(crime_per1k ~ poverty + region + per_doc + per_bed + pop18, data = crime_df)
 
 par(mfrow = c(2, 2))
 plot(mod1)
 
 summary(mod1)
 
-mod2 <- lm(crime_per1k ~ poverty + region + per_doc + per_bed + per_doc * per_bed + poverty * per_doc + poverty * per_bed, data = crime_df)
+mod2 <- lm(crime_per1k ~ poverty + region + per_doc + per_bed + pop18 + per_doc * per_bed + poverty * per_doc + poverty * per_bed, data = crime_df)
 summary(mod2)
 
 par(mfrow = c(2, 2))
@@ -60,11 +66,7 @@ plot(mod2)
 ```
 
 
-
-
-
-# Preditive ability
-## Need to be modified
+## Model validation
 ```{r}
 cv_df = crossv_mc(crime_df, 10)
 
@@ -74,7 +76,6 @@ cv_df <-
     train = map(train, as_tibble),
     test = map(test, as_tibble))
 ```
-
 
 ```{r}
 cv_df = 
@@ -88,10 +89,8 @@ cv_df =
     rmse_linear = map2_dbl(.x = linear_mod, .y = test, ~ modelr::rmse(model = .x, data = .y)))
 ```
 
-
-
-
 ```{r}
+# Plot RMSE
 cv_df %>%
   dplyr::select(starts_with("rmse")) %>%
   pivot_longer(
@@ -104,6 +103,4 @@ cv_df %>%
   ggplot(aes(x = model, y = rmse, fill = model)) +
   geom_violin() 
 ```
-
-
 

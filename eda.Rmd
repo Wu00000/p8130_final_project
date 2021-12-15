@@ -106,7 +106,6 @@ crime_df %>%
 ```
 
 
-
 ## Export data
 ```{r}
 # write_csv(crime_df, "./data/crime_df.csv")
