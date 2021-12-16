@@ -6,6 +6,23 @@ output: html_document
 ```{r setup}
 library(tidyverse)
 library(plyr)
+library(patchwork)
+
+knitr::opts_chunk$set(
+  fig.width = 10,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 ```{r}
@@ -43,8 +60,12 @@ crime_df %>%
 
 # Density
 crime_df %>% 
-  ggplot(aes(x = crime_per1k)) + 
-  geom_density()
+  ggplot(aes(x = crime_per1k, alpha = .6)) + 
+  geom_density(fill = "chocolate2", show.legend = FALSE) + 
+  labs(
+    x = "CRM_1000",
+    y = "Density"
+  )
 ```
 
 ## Check correlation between variables
@@ -76,7 +97,7 @@ cor_data <-
 
 # Select `poverty`, `regionNorth`, `regionSouth`, `per_doc`, `per_bed`
 cor_data %>% 
-  corrplot::corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE)
+  corrplot::corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE, mar = c(.1,.1,.1,.1))
 ```
 
 
@@ -85,24 +106,39 @@ cor_data %>%
 detach(package:plyr)
 
 # Distribution of `poverty`
-crime_df %>% 
+poverty_plt <-   
+  crime_df %>% 
   ggplot(aes(y = poverty)) + 
-  geom_boxplot()
+  geom_boxplot(fill = "skyblue2") + 
+  labs(y = "Poverty (%)")
 
 # Distribution of `region`
 crime_df %>% 
   group_by(region) %>% 
   summarize(count = n())
 
+# Distribution of `pop18`
+pop18_plt <- 
+  crime_df %>% 
+  ggplot(aes(y = pop18)) + 
+  geom_boxplot(fill = "chartreuse3") + 
+  labs(y = "Population aged 18-34 (%)")
+
 # Distribution of `per_doc`
-crime_df %>% 
+perdoc_plt <- 
+  crime_df %>% 
   ggplot(aes(y = per_doc)) + 
-  geom_boxplot()
+  geom_boxplot(fill = "gold2") + 
+  labs(y = "Active physicians (1k ppopulation)")
 
 # Distribution of `per_bed`
-crime_df %>% 
+perbed_plt <- 
+  crime_df %>% 
   ggplot(aes(y = per_bed)) + 
-  geom_boxplot()
+  geom_boxplot(fill = "indianred2") + 
+  labs(y = "Hospital beds (1k population)")
+
+(poverty_plt + pop18_plt) / (perdoc_plt + perbed_plt)
 ```
 
 
