@@ -7,7 +7,23 @@ library(tidyverse)
 library(modelr)
 library(performance)
 
-set.seed(6)
+knitr::opts_chunk$set(
+  fig.width = 10,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+set.seed(10)
 ```
 
 ```{r}
@@ -51,14 +67,14 @@ check_collinearity(fit1)
 
 ## Fit models and diagnositics
 ```{r}
-mod1 <- lm(crime_per1k ~ poverty + region + per_doc + per_bed + pop18, data = crime_df)
+mod1 <- lm(crime_per1k ~ pop18 + poverty + region + per_doc + per_bed + pop18, data = crime_df)
 
 par(mfrow = c(2, 2))
 plot(mod1)
 
 summary(mod1)
 
-mod2 <- lm(crime_per1k ~ poverty + region + per_doc + per_bed + pop18 + per_doc * per_bed + poverty * per_doc + poverty * per_bed, data = crime_df)
+mod2 <- lm(crime_per1k ~ pop18 + poverty + region + per_doc + per_bed + pop18 + per_doc * per_bed + poverty * per_doc + poverty * per_bed, data = crime_df)
 summary(mod2)
 
 par(mfrow = c(2, 2))
@@ -80,8 +96,8 @@ cv_df <-
 cv_df = 
   cv_df %>% 
   mutate(
-    non_interact = map(train, ~lm(crime_per1k ~ poverty + region + per_doc + per_bed, data = .x)), 
-    linear_mod  = map(train, ~lm(crime_per1k ~ poverty + region + per_doc + per_bed + per_doc * per_bed + poverty * per_doc + poverty * per_bed, data = .x))
+    non_interact = map(train, ~lm(crime_per1k ~ pop18 + poverty + region + per_doc + per_bed, data = .x)), 
+    linear_mod  = map(train, ~lm(crime_per1k ~ pop18 + poverty + region + per_doc + per_bed + per_doc * per_bed + poverty * per_doc + poverty * per_bed, data = .x))
     ) %>% 
   mutate(
     rmse_non = map2_dbl(.x = non_interact, .y = test, ~ modelr::rmse(model = .x, data = .y)),
@@ -99,7 +115,12 @@ cv_df %>%
     names_prefix = "rmse"
   ) %>%
   mutate(model = fct_inorder(model)) %>%
-  ggplot(aes(x = model, y = rmse, fill = model)) +
-  geom_violin() 
+  ggplot(aes(x = model, y = rmse, fill = model, alpha = .8)) +
+  geom_violin() +
+  scale_fill_manual(values = c("#ff595e","#6a4c93")) + 
+  labs(y = "RMSE",
+       x = "") + 
+  scale_x_discrete(labels = c("Model 1","Model 2")) + 
+  theme(legend.position = "none")
 ```
 
